@@ -80,6 +80,22 @@ sudo ROOT_PASSWORD='<choose-one>' ./linux/init-ssh.sh --yes
 > [!CAUTION]
 > Root login with a password is insecure. Only use this on isolated test/demo machines.
 
+### linux/set-hostname.sh
+
+Changes the hostname of an **Ubuntu Server 26.04**:
+
+1. sets the static hostname (short name) via `hostnamectl`
+2. maps FQDN and short name to `127.0.1.1` in `/etc/hosts` (a backup is kept)
+3. tells cloud-init not to reset the hostname or `/etc/hosts` on the next reboot
+
+```bash
+sudo ./linux/set-hostname.sh                        # asks for the new name
+sudo ./linux/set-hostname.sh demo01.example.com --yes
+```
+
+If Apache was set up with `init-apache.sh` for the old name, run it again with the new FQDN to
+get a matching vhost and certificate.
+
 ## No secrets in this repository
 
 This repository is public. Never commit passwords, API tokens, private keys, certificates or
