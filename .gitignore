@@ -1,0 +1,24 @@
+# Never commit secrets, keys or certificates
+*.key
+*.pem
+*.crt
+*.cer
+*.csr
+*.p12
+*.pfx
+*.jks
+*.kdbx
+.env
+.env.*
+*secret*
+*credentials*
+id_rsa*
+id_ed25519*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.log
