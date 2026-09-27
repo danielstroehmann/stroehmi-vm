@@ -56,6 +56,30 @@ Result:
 To use a real certificate later, replace the certificate and key files (or change the paths in
 the site config) and run `sudo systemctl reload apache2`.
 
+### linux/init-ssh.sh
+
+Installs and configures the OpenSSH server on a fresh **Ubuntu Server 26.04**:
+
+1. installs all pending updates (`apt-get full-upgrade`)
+2. installs `openssh-server` and enables it
+3. allows **password login for all users, including root**
+   (via `/etc/ssh/sshd_config.d/00-demo-password-auth.conf`, which takes precedence over the
+   cloud-init default `PasswordAuthentication no`)
+4. offers to set a root password, because root is locked on Ubuntu by default
+
+```bash
+sudo ./linux/init-ssh.sh
+```
+
+Non-interactive usage (the password comes from the environment and is never stored in the repo):
+
+```bash
+sudo ROOT_PASSWORD='<choose-one>' ./linux/init-ssh.sh --yes
+```
+
+> [!CAUTION]
+> Root login with a password is insecure. Only use this on isolated test/demo machines.
+
 ## No secrets in this repository
 
 This repository is public. Never commit passwords, API tokens, private keys, certificates or
