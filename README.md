@@ -16,7 +16,7 @@ A collection of helper scripts for quickly setting up **demo and test environmen
 | Folder | Purpose |
 | --- | --- |
 | [linux/](linux/) | Bash scripts for Linux servers (Ubuntu) |
-| [windows/](windows/) | Scripts for Windows servers (coming later) |
+| [windows/](windows/) | PowerShell scripts for Windows Server 2025 — see [windows/README.md](windows/README.md) |
 | [homepage/](homepage/) | Demo HTML pages that the scripts can deploy as a start page |
 
 ## Scripts
