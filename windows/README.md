@@ -76,13 +76,26 @@ Turns a fresh Windows Server 2025 into an IIS HTTPS demo host — the Windows co
 
 1. installs all pending Windows updates (via the built-in Windows Update API)
 2. installs IIS with the required features (static content, HTTP redirect, management tools)
-3. asks for the server's FQDN and creates a **self-signed certificate** for it
+3. asks whether **SNI** should be used:
+
+   | | without SNI | with SNI |
+   | --- | --- | --- |
+   | Websites | one | one or more, one per FQDN |
+   | IIS site | *Default Web Site* | one site per FQDN (`C:\inetpub\sites\<fqdn>`) |
+   | Binding | `*:443`, IP-based `0.0.0.0:443` | `*:443:<fqdn>` with SNI |
+   | Clients without SNI | get the certificate | get no certificate |
+
+4. asks for the FQDN(s) and creates a **self-signed certificate** per FQDN
    (`Cert:\LocalMachine\My`, friendly name `init-iis self-signed (<fqdn>)`)
-4. binds it on port 443 **without SNI** (IP-based binding `0.0.0.0:443`) on the
-   *Default Web Site*
-5. creates a site `HTTP-Redirect` on port 80 that redirects to `https://<fqdn>/` (301)
-6. shows the demo pages from `homepage/`, lets you pick one and deploys it as `index.html`
-   (the greeting and hosting text on the page can be customised)
+5. per website: shows the demo pages from `homepage/`, lets you pick one and asks for the
+   **page title** (browser tab), the greeting and the hosting text
+6. redirects HTTP (port 80) to HTTPS with a 301 — one small redirect site per FQDN plus a
+   catch-all site `HTTP-Redirect`
+7. checks every website: served certificate, HTTPS content, HTTP redirect, and the behaviour
+   for clients without SNI
+
+Each run describes the complete demo setup: sites created by an earlier run are replaced,
+other IIS sites are left alone.
 
 ```powershell
 .\init-iis.ps1
@@ -91,11 +104,15 @@ Turns a fresh Windows Server 2025 into an IIS HTTPS demo host — the Windows co
 Non-interactive:
 
 ```powershell
-.\init-iis.ps1 -Fqdn demo.example.com -Page index-racing-v2.html -HostInfo 'Hosting: IIS [Windows]' -Yes
+# without SNI
+.\init-iis.ps1 -Sni:$false -Fqdn demo.example.com -Page index-racing-v2.html -Yes
+
+# with SNI, two websites
+.\init-iis.ps1 -Sni -Fqdn a.example.com, b.example.com -Page index-racing-v2.html, index-rocket-v2.html -Yes
 ```
 
-Options: `-Fqdn`, `-Page` (file name or list number), `-Greeting`, `-HostInfo`, `-Yes`,
-`-SkipUpdates`, `-HomepageDir`.
+Options: `-Sni`, `-Fqdn` (one or more), `-Page` (file name or list number; one for all websites
+or one per FQDN), `-Title`, `-Greeting`, `-HostInfo`, `-Yes`, `-SkipUpdates`, `-HomepageDir`.
 
 Windows updates may require a reboot and sometimes a second run to catch follow-up updates —
 the script tells you when a reboot is pending.
